@@ -1,52 +1,100 @@
-def checkmate(board: str):
-    # 1. แปลง string เป็น list ของแต่ละบรรทัด
-    lines = [line for line in board.strip().split('\n') if line]
-    if not lines:
+def checkmate(board):
+
+    rows = board.splitlines()
+
+    if not rows:
         return
 
-    n = len(lines)
-    
-    # 2. หาตำแหน่ง King (K)
-    king_pos = None
-    for r in range(n):
-        for c in range(len(lines[r])):
-            if lines[r][c] == 'K':
-                king_pos = (r, c)
-                break
-        if king_pos:
-            break
+    size = len(rows)
+    for row in rows:
+        if len(row) != size:
+            print("eror")
+            return
 
-    # ถ้าไม่มี King อยู่บนกระดาน
-    if not king_pos:
+  
+    king_row = -1
+    king_col = -1
+    king_count = 0
+
+    for r in range(size):
+        for c in range(size):
+            if rows[r][c] == "K":
+                king_row = r
+                king_col = c
+                king_count += 1
+
+    if king_count != 1:
         return
 
-    kr, kc = king_pos
-
-    # 3. ฟังก์ชันช่วยเช็กว่าพิกัดอยู่ในกระดานหรือไม่
-    def is_valid(r, c):
-        return 0 <= r < n and 0 <= c < len(lines[r])
-
-    # 4. เช็กทิศทางต่างๆ
-    # ตัวอย่าง: เช็กทิศทางตรง (สำหรับ Rook 'R' และ Queen 'Q')
-    straight_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-    for dr, dc in straight_directions:
-        r, c = kr + dr, kc + dc
-        while is_valid(r, c):
-            piece = lines[r][c]
-            if piece in ('.', ' '): # ถ้าเป็นช่องว่าง ให้เดินต่อ
-                r += dr
-                c += dc
-                continue
-            if piece in ('R', 'Q'): # เจอตัวรุก
+    pawn_row = king_row + 1
+    if pawn_row < size:
+        if king_col - 1 >= 0:
+            if rows[pawn_row][king_col - 1] == "P":
                 print("Success")
                 return
-            else: # เจอตัวหมากอื่นบังทาง
+
+        if king_col + 1 < size:
+            if rows[pawn_row][king_col + 1] == "P":
+                print("Success")
+                return
+
+   
+ #  ตรวจ Rook / Queen
+   
+    straight_directions = [
+        (-1, 0),  # บน
+        (1, 0),   # ล่าง
+        (0, -1),  # ซ้าย
+        (0, 1)    # ขวา
+    ]
+
+    for dr, dc in straight_directions:
+        r = king_row + dr
+        c = king_col + dc
+
+        while 0 <= r < size and 0 <= c < size:
+
+            piece = rows[r][c]
+
+            if piece in "PBRQK":
+
+                if piece == "R" or piece == "Q":
+                    print("Success")
+                    return
+
+         
                 break
 
-    # TODO: เพิ่มการเช็กทิศทางเฉียงสำหรับ Bishop ('B') และ Queen ('Q')
-    # diagonal_directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+            r += dr
+            c += dc
 
-    # TODO: เพิ่มการเช็ก Pawn ('P') ในระยะประชิดแนวเฉียง
 
-    # ถ้าเช็กครบทุกทิศแล้วไม่เจอตัวรุก
+#  ตรวจ Bishop / Queen
+
+    diagonal_directions = [
+        (-1, -1),  # บนซ้าย
+        (-1, 1),   # บนขวา
+        (1, -1),   # ล่างซ้าย
+        (1, 1)     # ล่างขวา
+    ]
+
+    for dr, dc in diagonal_directions:
+        r = king_row + dr
+        c = king_col + dc
+
+        while 0 <= r < size and 0 <= c < size:
+
+            piece = rows[r][c]
+
+            if piece in "PBRQK":
+
+                if piece == "B" or piece == "Q":
+                    print("Success")
+                    return
+
+                break
+
+            r += dr
+            c += dc
+
     print("Fail")
