@@ -8,7 +8,7 @@ def checkmate(board):
     size = len(rows)
     for row in rows:
         if len(row) != size:
-            print("eror")
+            print("error")
             return
 
   
